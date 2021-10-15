@@ -44,6 +44,8 @@ while tn < N
     else
         frames = round( TrafficModel.StateModel.IdleFramesModel.random() );
     end
+    % no "empty phases":
+    frames = max(1, frames);
     % limit it to N
     if tn + frames - 1 > N
         frames = N-tn+1;
