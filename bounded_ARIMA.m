@@ -51,19 +51,33 @@ end
 eps_dist = model.EpsilonDistribution;
 
 y = nan(N, 1);
+yd = nan(N, 1);
 % epsilons = nan(N,1);
 epsilons = eps_dist.random(N,1); % faster approach: pre-sample + apply bounds only when necessary.
 
+lenalp = length(alphas);
+lenbet = length(betas);
+
 lasty = y0;
-for fi = 1:N
-    if D==0
-        yt = y(1:fi-1);
-    else
-        yt = diff(y(1:fi-1), D);
+for fi = 1:N    
+    if fi > 2
+        yd(fi-2) = y(fi-1) - y(fi-2);
     end
-    epst = epsilons(1:fi-1);
+    if D==0
+%         yt = y(1:fi-1);
+        Z = delta + delayedsum(alphas, y(max(1, fi-lenalp):fi-1)) + delayedsum(betas, epsilons(max(1, fi-lenbet):fi-1));
+    elseif D==1
+%         yt = diff(y(1:fi-1), D);
+        Z = delta + delayedsum(alphas, yd(max(1, fi-lenalp-1):fi-2)) + delayedsum(betas, epsilons(max(1, fi-lenbet):fi-1));
+    else
+        %yt = diff(y(1:fi-1), D);
+        Z = nan;
+        warning('D > 1 not yet implemented');
+    end
+%     epst = epsilons(1:fi-1);
     
-    Z = delta + delayedsum(alphas, yt) + delayedsum(betas, epst);
+%     Z = delta + delayedsum(alphas, yt) + delayedsum(betas, epst);
+    % Z = delta + delayedsum(alphas, yt) + delayedsum(betas, epsilons(1:fi-1));
     
     eps_bounds = [lb, ub] - Z;
     if D==1
