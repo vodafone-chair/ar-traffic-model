@@ -18,6 +18,7 @@ title('Correlated Traffic Model');
 
 
 % Disable the Correlation Features in P and KeyFrames:
+% TrafficModel = DefaultTrafficModel();
 TrafficModel.PFrameModel.Type = 'independent';
 TrafficModel.KeyFrameModel.BusyPFrameCorrelation = 0;
 
@@ -26,3 +27,17 @@ traffic_simulation(N, TrafficModel, do_plot);
 toc
 box on; grid on;
 title('Uncorrelated Traffic Model');
+
+
+%% no key frames:
+rng(1);
+% load default configuration:
+TrafficModel = DefaultTrafficModel();
+% set Key frame intervals to infinity (first frame will still be a key frame)
+TrafficModel.KeyFrameModel.IntervalDistribution = DiscreteDist(1, inf);
+
+tic;
+[times, framesizes] = traffic_simulation(N, TrafficModel, do_plot);
+toc
+box on; grid on;
+title('Correlated Traffic Model');

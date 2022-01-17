@@ -22,6 +22,8 @@ if nargin < 3
     do_plot = false;
 end
 
+TrafficModel = checkTrafficModel(TrafficModel);
+
 %% setup
 % times = (0 : N-1)' / TrafficModel.General.fps;
 times      = cumsum([0; TrafficModel.InterArrivalTimeDist.random(N-1,1)]);

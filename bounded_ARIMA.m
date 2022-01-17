@@ -58,6 +58,11 @@ epsilons = eps_dist.random(N,1); % faster approach: pre-sample + apply bounds on
 lenalp = length(alphas);
 lenbet = length(betas);
 
+if y0 < lb  || y0 >  ub
+    warning('Start value y0 violates bounds!\n  y=%g\n  lb=%g\n  ub=%g\n', y0, lb, ub);
+    % y0 = max(lb, min(ub, y0));
+end
+
 lasty = y0;
 for fi = 1:N    
     if fi > 2
@@ -87,7 +92,7 @@ for fi = 1:N
     if epsilons(fi) < eps_bounds(1) || epsilons(fi) > eps_bounds(2)
         % resample:        
         if diff(eps_dist.cdf(eps_bounds)) <= 0
-            % truncation not possible (probability < 0)
+            % truncation not possible (probability <= 0)
             if epsilons(fi) > eps_bounds(2)
                 % enforce negative epsilon
                 eps_bounds = [-inf, 0];
@@ -109,6 +114,11 @@ for fi = 1:N
             warning('D > 1 not yet implemented');
     end
     
+    %debug
+    if y(fi) < lb || y(fi) > ub
+        warning('Bounds violated at Index %d!\n  y=%g\n  lb=%g\n  ub=%g\n', fi, y(fi), lb, ub);
+        fprintf('');
+    end    
     %
     lasty = y(fi);
 end
